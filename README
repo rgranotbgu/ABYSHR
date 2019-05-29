@@ -1,0 +1,100 @@
+## Steps to running the ridgelet transform method (Downey and Clayton, G3, 2007) + Shape analysis (Roth et al., EPSL, 2019) ##
+## Feb  2019 -Shai Roth shairot12@gmail.com ##
+
+## The following codes were designed to work on Mac OSX 10.12 machine
+## You should have the following software installed on your computer:
+1) GMT Version 5 or later
+2) MB-System version 5.5 or later
+3) python 2.7 with the following modules:
+	a) numpy
+	b) matplotlib
+	c) sys
+	d) subprocess
+	e) ipython/jupyter notebook (for final processing)
+	f) bokeh (for final processing)
+4) MATLAB 2015a or later 
+5) gcc
+
+
+## There are two directories:
+1) Codes - containing all the required codes  
+2) Example - containing the codes, together with the outputs from the analysis of an example track from the Mid Atlantic Ridge.
+
+
+## ============================================ ##
+## ======= RIDGELET TRANSFORM ======= ##
+** A detailed explanation of the RIDGELET TRANSFORM is found inside the “Codes” directory - under the name “README_Ridgelet_Transform.txt” **
+
+#### ---- FIRST STEP ----- 
+## Processing of multibeam data & calculation of the Radon transform
+1) Prepare the following:
+	a) Have directory of multibeam (MB) data files named: ‘MB_files’. Note that input files need to be in *.mbxxx format (not fbt files). data maybe stored under sub-directories
+	b) Fill the ‘file_list’ file (full paths to the MB data-files)
+	c) Have an empty ‘Output' directory (the "Output_Example" store the outcome that you should get in the Output folder, if you won't change the variables).
+	d) Fill in locations that you want the RT to ignore in the ‘blacklist.asc’ file. Each location is defined in a separate line, format: Lon_min Lon_max Lat_min Lat_max (i.e., similar to GMT format)
+	e) Prepare track files (track1..2..3 files. See for example "track1" file) - You can either use a real ship-track (for regions with narrow multibeam coverage), or calculate flow-line like track (for regions
+	    with wide multibeam coverage). The distance between successive points along the track should be constant and be larger than multibeam grid size
+	f) Prepare ‘multibeam.cpt’ file - for example, you can use the GMT command: “makecpt -Z -Chaxby -T-4650/-1850/200”
+2) Edit ‘radon.pl’ and modify the user-defined variables
+3) Run radon.pl
+
+
+#### ---- Second STEP - maxima.m ----- 
+## Calculation of the Ridgelet transform - locating the abyssal hills
+1) Move to the ‘Maxima’ directory
+2) Review and modify variables in ‘maxima.m’
+3) Run ‘maxima.m’ from Matlab 
+4) Initial visual inspection of the located maxima (here you see all the results of the RIGDELET TRANSFORM, but with a lot of noise):
+	4.1) Review and modify variables in ‘plotter_maxima.pl’ 
+	4.2) Run ‘plotter_maxima.pl’.
+5) Now visually examine the maxima after they are filtered by distance and Radon-value. The filtering is needed because the maxima process usually produces a lot of
+    noise - multiple hills with different azimuths may appear on the same location. Visual inspection of the filtered maxima allows you to change the “maxima.m” variables
+    until you are satisfied with the results. 
+    Do the following:
+	5.1) In the ‘../Shape_analysis’ directory - modify and run ‘sort_maxima.pl’. A similar script will run automatically in the beginning of the shape analysis.
+	5.2) In the ‘../Shape_analysis' directory - modify & run plotter_srt.pl’. This code plots the results.
+6) Change the parameters in ‘maxima.m’ & repeat the process (2-5) until you get satisfying results.
+
+Now, it’s time for the final shape analysis of each of the detected abyssal hills (Roth et al., 2019)
+
+## ============================================ ##
+## ======= Hill Shape Analysis ======= ##
+#### ---- First STEP - maxima_to_morph.pl ------
+## Analysis of the shape of the hills along bathymetric cross-sections 
+
+1) Move to the ‘Shape_analysis’ directory
+2) Empty the ‘Output2’ directory
+3) Review and modify variables in ‘maxima_to_morph.pl’:
+	a) $hill_height_trsh_low & $hill_height_trsh_high - these parameters are the minimal thresholds for the height of the hills. Cross-sections containing hills lower than
+	     that will not be counted. There are two such thresholds (low & high) in order to count for the asymmetric nature of the hills.
+	b) $min_dist - determines the minimal distance between two adjacent hills. set it to the same values you used when running “sort_maxima.pl” in the second
+	     step (maxima.m).
+	c) $min_pro_num - this is the minimal number of successful cross-sections that a hill should have, in order for the script to calculate the average shape parameters
+	    of the hill (+standard deviations).
+4) Run ‘maxima_to_morph.pl’ - you should see numbers running.
+
+#### ---- Second STEP - Visual inspection ------
+## It’s important to inspect the results - mainly to make sure (1) that the same hills are not sampled twice
+## and (2) that you have not sampled a noisy area with bad bathymetry.
+1) Enter ‘plotter_srt.pl’ and enable lines 47-55 - The shape analysis of the cross-sections is done with right & left directions, not geographical directions. It's important to
+    realise which of these directions are inward (facing the axis) and outward (facing opposite from the axis). These lines will plot the directions from which the cross
+    sections begin (shows a negative distance, which means: left) and end (shows a positive distance, which means: right).
+2) Run plotter_srt.pl
+3) Visually inspect these files together:
+	a) Output2/**.hill_shape.track**.txt (the result files)
+	b) plot**.pdf (bathymetric map)
+	c) The plots (png files) of the cross-sections in Output2 folder
+
+#### ---- Third (Final) STEP - processing the results ------
+1) Copy Output2/*.hill_shape.track**.txt to the ‘Shape_analysis/Results’ directory
+2) Move to the ‘Shape_analysis/Results’ directory
+3) If your track covers only one side of the mid ocean ridge - Open “shape_data_analysis_1_MOR_side.ipynb” with ipython/jupyter notebook.
+    If your track covers both sides of the mid ocean ridge - Open “shape_data_analysis_both_MOR_sides.ipynb” with ipython/jupyter notebook.
+4) Read the notes at the beginning of the file and, if necessary, modify it accordingly.
+5) Change the filename for your results file.
+6) Run the file and inspect your results.
+7) The ipynb has two outputs files:
+	a) a cvs file with track-averages
+	b) a txt file with the shape parameters of the hills along the track.
+
+** More details about the shape analysis are found inside the “Codes/Shape_analysis” directory - under the name “README_Shape_analysis.txt” **
