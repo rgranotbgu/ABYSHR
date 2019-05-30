@@ -1,5 +1,5 @@
-## Steps to running the ridgelet transform method (Downey and Clayton, G3, 2007) + Shape analysis (Roth et al., EPSL, 2019) ##
-## Feb  2019 -Shai Roth shairot12@gmail.com ##.
+## Steps to running the ridgelet transform method (Downey and Clayton, G3, 2007) + Shape analysis ##
+## Feb  2019 -Shai Roth shairot12@gmail.com ##
 
 ## The following codes were designed to work on Mac OSX 10.12 machine
 ## You should have the following software installed on your computer:
@@ -15,10 +15,11 @@
 4) MATLAB 2015a or later 
 5) gcc
 
-
-## There are two directories:
+## You need to download th two folders.
+## The two directories are:
 1) Codes - containing all the required codes  
-2) Example - containing the codes, together with the outputs from the analysis of an example track from the Mid Atlantic Ridge.
+2) Example - containing the same codes, together with the outputs from the analysis of an example track from the Mid Atlantic Ridge.
+We recommend to first run the entire process on the example files in the Example folder. Later, you may use these codes, or the ones in the Codes directories
 
 
 ## ============================================ ##
@@ -65,8 +66,8 @@ Now, it’s time for the final shape analysis of each of the detected abyssal hi
 1) Move to the ‘Shape_analysis’ directory
 2) Empty the ‘Output2’ directory
 3) Review and modify variables in ‘maxima_to_morph.pl’:
-	a) $hill_height_trsh_low & $hill_height_trsh_high - these parameters are the minimal thresholds for the height of the hills. Cross-sections containing hills lower than
-	     that will not be counted. There are two such thresholds (low & high) in order to count for the asymmetric nature of the hills.
+	a) $hill_height_trsh_low & $hill_height_trsh_high - these parameters are the minimal thresholds for the height of the hills. Transects containing abyssal hills shorter than
+	     these two values will not be counted. These two thresholds are designed to take care of the asymmetric nature of the hills (so each limit takes care of one of the flanks).
 	b) $min_dist - determines the minimal distance between two adjacent hills. set it to the same values you used when running “sort_maxima.pl” in the second
 	     step (maxima.m).
 	c) $min_pro_num - this is the minimal number of successful cross-sections that a hill should have, in order for the script to calculate the average shape parameters
